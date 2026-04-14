@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>My IP Info</title>
+<style>
+  body { font-family: Arial, sans-serif; background:#111; color:#eee; padding:20px; }
+  .box { background:#1a1a1a; padding:20px; border-radius:10px; max-width:400px; }
+  h2 { margin-top:0; color:#4dd0ff; }
+  .label { font-size:12px; color:#aaa; margin-top:10px; }
+  .value { font-size:16px; margin-top:2px; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>My IP Info</h2>
+
+  <div class="label">IP Address</div>
+  <div id="ip" class="value">Loading…</div>
+
+  <div class="label">City</div>
+  <div id="city" class="value">Loading…</div>
+
+  <div class="label">Region</div>
+  <div id="region" class="value">Loading…</div>
+
+  <div class="label">Country</div>
+  <div id="country" class="value">Loading…</div>
+
+  <div class="label">ISP</div>
+  <div id="org" class="value">Loading…</div>
+
+  <div class="label">Coordinates</div>
+  <div id="loc" class="value">Loading…</div>
+
+  <div id="status" style="margin-top:15px; font-size:12px; color:#888;">Fetching…</div>
+</div>
+
+<script>
+async function loadIP() {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+
+    document.getElementById("ip").textContent = data.ip;
+    document.getElementById("city").textContent = data.city;
+    document.getElementById("region").textContent = data.region;
+    document.getElementById("country").textContent = data.country_name;
+    document.getElementById("org").textContent = data.org;
+    document.getElementById("loc").textContent = data.latitude + ", " + data.longitude;
+
+    document.getElementById("status").textContent =
+      "Updated: " + new Date().toLocaleString();
+  } catch (e) {
+    document.getElementById("status").textContent = "Failed to load IP info";
+  }
+}
+loadIP();
+</script>
+</body>
+</html>
