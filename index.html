@@ -2,60 +2,101 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Fun Stuff</title>
+<title>System Info Display</title>
 <style>
-  body { font-family: Arial, sans-serif; background:#111; color:#eee; padding:20px; }
-  .box { background:#1a1a1a; padding:20px; border-radius:10px; max-width:400px; }
-  h2 { margin-top:0; color:#4dd0ff; }
-  .label { font-size:12px; color:#aaa; margin-top:10px; }
-  .value { font-size:16px; margin-top:2px; }
+  body {
+    font-family: monospace;
+    background: #000;
+    color: #ff3b3b;
+    padding: 20px;
+  }
+  .box {
+    background: #150000;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 450px;
+    margin: auto;
+    box-shadow: 0 0 25px rgba(255,0,0,0.4);
+  }
+  h2 {
+    margin-top: 0;
+    color: #ff4d4d;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  .value {
+    font-size: 18px;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeIn 0.8s forwards;
+    margin-top: 12px;
+  }
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>
 </head>
 <body>
 <div class="box">
-  <h2>My IP Info</h2>
+  <h2>System Readout</h2>
 
-  <div class="label">IP Address</div>
-  <div id="ip" class="value">Loading…</div>
+  <div id="ip" class="value"></div>
+  <div id="city" class="value"></div>
+  <div id="region" class="value"></div>
+  <div id="country" class="value"></div>
+  <div id="org" class="value"></div>
+  <div id="loc" class="value"></div>
+  <div id="browser" class="value"></div>
+  <div id="os" class="value"></div>
+  <div id="screen" class="value"></div>
 
-  <div class="label">City</div>
-  <div id="city" class="value">Loading…</div>
-
-  <div class="label">Region</div>
-  <div id="region" class="value">Loading…</div>
-
-  <div class="label">Country</div>
-  <div id="country" class="value">Loading…</div>
-
-  <div class="label">ISP</div>
-  <div id="org" class="value">Loading…</div>
-
-  <div class="label">Coordinates</div>
-  <div id="loc" class="value">Loading…</div>
-
-  <div id="status" style="margin-top:15px; font-size:12px; color:#888;">Fetching…</div>
+  <div id="status" style="margin-top:20px; font-size:12px; color:#aa0000; text-align:center;">
+    Loading…
+  </div>
 </div>
 
 <script>
-async function loadIP() {
+function reveal(element, delay) {
+  element.style.animationDelay = delay + "ms";
+}
+
+async function loadInfo() {
+  const status = document.getElementById("status");
+
   try {
     const res = await fetch("https://ipapi.co/json/");
     const data = await res.json();
 
-    document.getElementById("ip").textContent = data.ip;
-    document.getElementById("city").textContent = data.city;
-    document.getElementById("region").textContent = data.region;
-    document.getElementById("country").textContent = data.country_name;
-    document.getElementById("org").textContent = data.org;
-    document.getElementById("loc").textContent = data.latitude + ", " + data.longitude;
+    const fields = [
+      ["ip", data.ip],
+      ["city", data.city],
+      ["region", data.region],
+      ["country", data.country_name],
+      ["org", data.org],
+      ["loc", data.latitude + ", " + data.longitude],
+      ["browser", navigator.userAgent],
+      ["os", navigator.platform],
+      ["screen", window.screen.width + " x " + window.screen.height]
+    ];
 
-    document.getElementById("status").textContent =
-      "Updated: " + new Date().toLocaleString();
+    let delay = 200;
+    fields.forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      el.textContent = value;
+      reveal(el, delay);
+      delay += 250;
+    });
+
+    status.textContent = "Updated: " + new Date().toLocaleString();
   } catch (e) {
-    document.getElementById("status").textContent = "Failed to load IP info";
+    status.textContent = "Unable to load info";
   }
 }
-loadIP();
+
+loadInfo();
 </script>
 </body>
 </html>
